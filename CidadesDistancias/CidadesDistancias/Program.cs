@@ -3,60 +3,59 @@ class Program
 {
     static void Main(string[] args)
     {
-        Console.WriteLine("Entre com o número de cidades: ");
-        int numeroDeCidades = ColetaInt();
+        Console.WriteLine("Entre com o nome do arquivo com as distâncias na área de trabalho entre cidades: ");
+        int[][] distancias = PreencheDistancias(Console.ReadLine());
 
-        int[,] distancias = new int[numeroDeCidades, numeroDeCidades];
-        PreencheDistancias(distancias);
+        Console.WriteLine("Entre com o nome do arquivo com o caminho");
+        int[] caminho = PreencheCaminho(Console.ReadLine());
+       
 
-        int distanciaPercorrida = CalculaDistanciaDoCaminho(distancias);
+        int distanciaPercorrida = CalculaDistanciaDoCaminho(caminho, distancias);
         Console.WriteLine($"A distância percorrida foi {distanciaPercorrida}");
     }
 
-    private static int CalculaDistanciaDoCaminho(int[,] distancias)
+    private static int CalculaDistanciaDoCaminho(int[] caminho, int[][] distancias)
     {
-        Console.WriteLine("Entre com o número de cidades em que o caminho vai parar, incluindo as cidades de partida e chegada");
-        int cidadesParadas = ColetaInt();
-
-        int distanciaPercorrida = 0;
-        Console.WriteLine("Entre com a cidade de partida");
-        int anterior, atual;
-        anterior = ColetaInt() - 1;
-        for (int i = 1; i < cidadesParadas; i++)
+        int distancia = 0;
+        int anterior = caminho[0] - 1;
+        int atual;
+        for (int i = 1; i < caminho.Length; i++)
         {
-            Console.WriteLine("Entre com a próxima cidade");
-            atual = ColetaInt() - 1;
-
-            if (atual < anterior)
-                distanciaPercorrida += distancias[anterior, atual];
-            else
-                distanciaPercorrida += distancias[atual, anterior];
-
+            atual = caminho[i] - 1;
+            distancia += distancias[anterior][atual];
             anterior = atual;
         }
 
-        return distanciaPercorrida;
+        return distancia;
     }
 
-    public static int ColetaInt()
+    private static int[] PreencheCaminho(string? arquivoCaminho)
     {
-        int i;
-        Console.Write("Entre com um número inteiro maior ou igual a zero: ");
-        while (!int.TryParse(Console.ReadLine(), out i) || i < 0)
-            Console.WriteLine("Entrada inválida, entre com um poisitvo maior ou igual a zero: ");
-        return i;
+        if (arquivoCaminho == null)
+            throw new ArgumentException("Arquivo nao existe");
+
+        string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), arquivoCaminho);
+        string[] distanciasString = File.ReadAllLines(path);
+
+        return distanciasString[0].Split(',').Select(s => Convert.ToInt32(s)).ToArray();
     }
 
-    public static void PreencheDistancias(int[,] distancias)
-    {
-        for (int i = 0; i < distancias.GetLength(0); i++)
+    public static int[][] PreencheDistancias(string? arquivoDistancias)
+    { 
+        if (arquivoDistancias == null)
+            throw new ArgumentException("Arquivo nao existe");
+
+        string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), arquivoDistancias);
+        string[] distanciasString = File.ReadAllLines(path);
+
+        int[][] distancias = new int[distanciasString[0].Split(',').Length][];
+        int i = 0;
+        foreach (string linha in distanciasString)
         {
-            for (int j = 0; j < i; j++)
-            {
-                Console.WriteLine($"Entre com a distância entre as cidades {i + 1} e {j + 1}");
-                distancias[i, j] = ColetaInt();
-            }
+            distancias[i] = distanciasString[i].Split(',').Select(s => Convert.ToInt32(s)).ToArray();
+            i += 1;
         }
+        return distancias;
     }
 }
 
