@@ -35,18 +35,9 @@ class Program
 
     private static int[] PreencheCaminho(string? arquivoCaminho)
     {
-        if (arquivoCaminho == null)
-            throw new ArgumentException("Arquivo nao existe");
-
-        var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-        {
-            HasHeaderRecord = false,
-            NewLine = Environment.NewLine,
-            Delimiter = ","
-        };
-        string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), arquivoCaminho);
-        using var leitorCsv = new StreamReader(path);
-        using var csv = new CsvParser(leitorCsv, config);
+        StreamReader leitorCsv;
+        CsvParser csv;
+        ConfiguraCsvParser(arquivoCaminho, out leitorCsv, out csv);
 
         if (!csv.Read())
             throw new ArgumentException("Arquivo vazio!");
@@ -55,18 +46,10 @@ class Program
     }
 
     public static int[][] PreencheDistancias(string? arquivoDistancias)
-    { 
-        if (arquivoDistancias == null)
-            throw new ArgumentException("Arquivo nao existe");
-
-        var config = new CsvConfiguration(CultureInfo.InvariantCulture) {
-            HasHeaderRecord = false,
-            NewLine = Environment.NewLine,
-            Delimiter = ","
-        };
-        string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), arquivoDistancias);
-        using var leitorCsv = new StreamReader(path);
-        using var csv = new CsvParser(leitorCsv, config);
+    {
+        StreamReader leitorCsv;
+        CsvParser csv;
+        ConfiguraCsvParser(arquivoDistancias, out leitorCsv, out csv);
 
         if (!csv.Read())
             throw new ArgumentException("Arquivo vazio!");
@@ -79,5 +62,20 @@ class Program
         return distancias;
     }
 
+    private static void ConfiguraCsvParser(string? arquivoDistancias, out StreamReader leitorCsv, out CsvParser csv)
+    {
+        if (arquivoDistancias == null)
+            throw new ArgumentException("Arquivo nao existe");
+
+        var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+        {
+            HasHeaderRecord = false,
+            NewLine = Environment.NewLine,
+            Delimiter = ","
+        };
+        string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), arquivoDistancias);
+        leitorCsv = new StreamReader(path);
+        csv = new CsvParser(leitorCsv, config);
+    }
 }
 
