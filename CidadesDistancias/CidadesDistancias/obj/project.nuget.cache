@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "0JMPYHR7y+GFxsZHpKybAbCpkeaf5bwyAMCTrGqIg2BwkqPbkLAy0U7Nh984unncbKgOvLXY+Fqp+2oY1zXLTA==",
+  "dgSpecHash": "6GTsNtpEYK6kOOK+EGLt2DazTpskvRWlK5W36Zz9NG2aD4TvXp/7NmQSD2+ZrWDNLe0Ln/b8CH5ogPZv1Y5zoQ==",
   "success": true,
   "projectFilePath": "/Users/Arthur_Prado_De_Fazio/code_at_CS/cidades_distancias/CidadesDistancias/CidadesDistancias/CidadesDistancias.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "/Users/Arthur_Prado_De_Fazio/.nuget/packages/csvhelper/30.0.1/csvhelper.30.0.1.nupkg.sha512"
+  ],
   "logs": []
 }

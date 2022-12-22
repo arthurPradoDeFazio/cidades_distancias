@@ -1,4 +1,8 @@
-﻿namespace CidadesDistancias;
+﻿using System.Globalization;
+using CsvHelper;
+using CsvHelper.Configuration;
+
+namespace CidadesDistancias;
 class Program
 {
     static void Main(string[] args)
@@ -34,10 +38,20 @@ class Program
         if (arquivoCaminho == null)
             throw new ArgumentException("Arquivo nao existe");
 
+        var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+        {
+            HasHeaderRecord = false,
+            NewLine = Environment.NewLine,
+            Delimiter = ","
+        };
         string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), arquivoCaminho);
-        string[] distanciasString = File.ReadAllLines(path);
+        using var leitorCsv = new StreamReader(path);
+        using var csv = new CsvParser(leitorCsv, config);
 
-        return distanciasString[0].Split(',').Select(s => Convert.ToInt32(s)).ToArray();
+        if (!csv.Read())
+            throw new ArgumentException("Arquivo vazio!");
+
+        return csv.Record.Select(x => Convert.ToInt32(x)).ToArray();
     }
 
     public static int[][] PreencheDistancias(string? arquivoDistancias)
@@ -45,17 +59,25 @@ class Program
         if (arquivoDistancias == null)
             throw new ArgumentException("Arquivo nao existe");
 
+        var config = new CsvConfiguration(CultureInfo.InvariantCulture) {
+            HasHeaderRecord = false,
+            NewLine = Environment.NewLine,
+            Delimiter = ","
+        };
         string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), arquivoDistancias);
-        string[] distanciasString = File.ReadAllLines(path);
+        using var leitorCsv = new StreamReader(path);
+        using var csv = new CsvParser(leitorCsv, config);
 
-        int[][] distancias = new int[distanciasString[0].Split(',').Length][];
-        int i = 0;
-        foreach (string linha in distanciasString)
-        {
-            distancias[i] = distanciasString[i].Split(',').Select(s => Convert.ToInt32(s)).ToArray();
-            i += 1;
-        }
+        if (!csv.Read())
+            throw new ArgumentException("Arquivo vazio!");
+
+        int numColunas = csv.Record.Length;
+        int[][] distancias = new int[numColunas][];
+
+        for (int i = 0; i < numColunas; i++, csv.Read())
+            distancias[i] = csv.Record.Select(x => Convert.ToInt32(x)).ToArray();
         return distancias;
     }
+
 }
 
